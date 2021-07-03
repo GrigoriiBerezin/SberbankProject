@@ -1,9 +1,7 @@
-from django.shortcuts import render
-
 from rest_framework import viewsets
 
-from .serializers import MessageSerializer
 from .models import Message
+from .serializers import MessageSerializer
 
 
 # Create your views here.
