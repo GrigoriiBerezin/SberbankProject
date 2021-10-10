@@ -26,8 +26,4 @@ class Message(models.Model):
     category_type = models.IntegerField(null=True, choices=CATEGORY_CHOICES)
 
     def __str__(self):
-        return f"""
-        "url": {self.url}
-        "name": {self.name}
-        "content": {self.content}
-        "createdAt": {self.createdAt.strftime("%m/%d/%Y %H:%M:%S")}"""
+        return f"""{self.name} ({self.content[:20]}...) {self.createdAt.strftime("%d.%m.%Y %H:%M")}"""
