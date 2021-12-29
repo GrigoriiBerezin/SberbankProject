@@ -2,8 +2,11 @@ from django.db import models
 
 
 # Create your models here.
+# TODO: add subject field
+# TODO: change category choices by Misha decision
 class Message(models.Model):
     PROBLEM_CHOICES = [
+        (0, "No problem"),
         (1, "Fraud"),
         (2, "Breakdown")
     ]
@@ -21,7 +24,7 @@ class Message(models.Model):
         (2, "Problem Detected"),
         (3, "Category Detected"),
         (4, "Tone Detected"),
-        (5, "Geo Position Detected"),
+        (5, "Coordinates Detected"),
         (6, "Marked Message")
     ]
 
