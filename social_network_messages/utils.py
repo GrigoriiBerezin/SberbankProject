@@ -4,7 +4,11 @@ import re
 import pandas as pd
 from django.db.models import QuerySet
 
-from social_network_messages.models import Message
+from social_network_messages.models import Message, City
+
+FOREIGN_KEY_MAPPER = {
+    "coordinates": City
+}
 
 
 def get_models(status: str, field: str) -> pd.DataFrame:
@@ -15,6 +19,10 @@ def get_models(status: str, field: str) -> pd.DataFrame:
     return data_frame
 
 
+def get_foreign_key(model, value):
+    return model.objects.filter(id=value).first()
+
+
 def update_model(df: pd.DataFrame):
     json_list = json.loads(json.dumps(list(df.T.to_dict().values())))
 
@@ -22,7 +30,11 @@ def update_model(df: pd.DataFrame):
         message = Message.objects.get(id=dic["id"])
         dic.pop("id")
         for (key, value) in dic.items():
-            setattr(message, key, value)
+            model = FOREIGN_KEY_MAPPER.get(key)
+            if model:
+                setattr(message, key, get_foreign_key(model, value))
+            else:
+                setattr(message, key, value)
         message.save()
 
 

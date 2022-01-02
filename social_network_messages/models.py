@@ -1,7 +1,24 @@
+import datetime
+
 from django.db import models
 
 
 # Create your models here.
+class City(models.Model):
+    DEFAULT_CITY_ID = 9999
+
+    name = models.CharField(max_length=100, unique=True)
+    x = models.FloatField()
+    y = models.FloatField()
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'cities'
+
+
 # TODO: add subject field
 # TODO: change category choices by Misha decision
 class Message(models.Model):
@@ -32,11 +49,14 @@ class Message(models.Model):
     name = models.CharField(max_length=400)
     content = models.TextField()
     source = models.CharField(max_length=200, null=True)
-    createdAt = models.DateTimeField()
-    coordinates = models.CharField(max_length=100, null=True)
+    createdAt = models.DateTimeField(default=datetime.datetime.now())
+    coordinates = models.ForeignKey(City, on_delete=models.PROTECT, default=City.DEFAULT_CITY_ID, related_name='city')
     problem_type = models.IntegerField(null=True, choices=PROBLEM_CHOICES)
     category_type = models.IntegerField(null=True, choices=CATEGORY_CHOICES)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
     def __str__(self):
         return f"""{self.name} ({self.content[:20]}...) {self.createdAt.strftime("%d.%m.%Y %H:%M")}"""
+
+    class Meta:
+        ordering = ['createdAt']

@@ -5,19 +5,17 @@ import numpy as np
 import pandas as pd
 from datrie import Trie
 
+from social_network_messages.models import City, Message
 from social_network_messages.utils import preprocess_text
 
 
-# TODO: make new model City with oneToMany
-def get_cities() -> np.ndarray:
-    with open("cities.tsv", "r", encoding="utf-8") as cities_out:
-        city_reader = csv.reader(cities_out, dialect='excel-tab')
-        cities = np.array([city for city in city_reader])
-    return cities
+def _get_cities_from_db() -> np.ndarray:
+    cities = City.objects.all()
+    return np.array([city for city in cities])
 
 
 def detect_geo(data: pd.DataFrame) -> pd.DataFrame:
-    cities: np.ndarray = get_cities()
+    cities: np.ndarray = _get_cities_from_db()
     trie: Trie = datrie.Trie(''.join([chr(x) for x in range(ord('а'), ord('я') + 1)]))
 
     # TODO: replace with apply (less memory)
@@ -27,12 +25,12 @@ def detect_geo(data: pd.DataFrame) -> pd.DataFrame:
         content = preprocess_text(content)
         for index, word in enumerate(content.split()):
             trie[word] = index
-        coordinates = 'Without geo'
+        coordinates = City.DEFAULT_CITY_ID
         for city_with_coord in cities:
-            city = city_with_coord[0]
-            city_base = city[:len(city) - 1]
+            city_name = city_with_coord.name
+            city_base = city_name[:len(city_name) - 1]
             if trie.has_keys_with_prefix(city_base.lower()):
-                coordinates = np.array2string(city_with_coord, separator=' ')
+                coordinates = city_with_coord.id
                 break
         data._set_value(table_index, 'coordinates', coordinates)
         data._set_value(table_index, 'status', 5)
