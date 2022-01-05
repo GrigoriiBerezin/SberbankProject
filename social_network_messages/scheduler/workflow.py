@@ -3,11 +3,12 @@ import logging
 import pandas as pd
 
 from social_network_messages.scheduler.geocoding import detect_geo
+from social_network_messages.scheduler.problem_detecting import detect_problem
 from social_network_messages.utils import get_models, update_model
 
 WORKFLOW_STATS = {
     "subject detecting": ("New Message", "subject", None),  # TODO: add model func to detecting subjects
-    "problem detecting": ("Subject Detected", "problem_type", None),  # TODO: add model func to detecting problem types
+    "problem detecting": ("Subject Detected", "problem_type", detect_problem),
     "category detecting": ("Problem Detected", "category_type", None),  # TODO: add model func to detecting categories
     "tone detecting": ("Category Detected", "tone", None),  # TODO: add model func to detecting tones
     "geo position detecting": ("Tone Detected", "coordinates", detect_geo),

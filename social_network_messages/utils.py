@@ -30,9 +30,9 @@ def update_model(df: pd.DataFrame):
         message = Message.objects.get(id=dic["id"])
         dic.pop("id")
         for (key, value) in dic.items():
-            model = FOREIGN_KEY_MAPPER.get(key)
-            if model:
-                setattr(message, key, get_foreign_key(model, value))
+            foreign_key_id = FOREIGN_KEY_MAPPER.get(key)
+            if foreign_key_id:
+                setattr(message, key, get_foreign_key(foreign_key_id, value))
             else:
                 setattr(message, key, value)
         message.save()
