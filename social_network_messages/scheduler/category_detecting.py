@@ -26,9 +26,9 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
     def _detect_topics(message, topic_dict, lemm_text, threshold=configurations.category_detect["threshold"]):
         prob = model.choose_best_label(lemm_text[message.id])
         topic = topic_dict[prob[0]] if prob[1] >= threshold else 0
-        return [message.id, message.content, 3, message.problem_type, topic]
+        return [message.id, message.content, message.status, message.problem_type, topic]
 
-    def _create_cluster(word_sentences):
+    def _create_fraud_cluster(word_sentences):
         def _detect_topic(words_with_populate):
             words = [word_with_populate[0] for word_with_populate in words_with_populate]
             # TODO: human-readable statuses
@@ -37,7 +37,16 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
         names_card = ('онлайн', 'приложение', 'мобильный', 'телефон', 'звонить')
         return [_detect_topic(words) for words in word_sentences]
 
-    def _create_topic_dict(words_by_sentences):
+    def _create_breakdown_cluster(word_sentences):
+        def _detect_topic(words_with_populate):
+            words = [word_with_populate[0] for word_with_populate in words_with_populate]
+            # TODO: human-readable statuses
+            return 2 if len(set(words).intersection(names_mob)) else 1
+
+        names_mob = ('онлайн', 'приложение', 'мобильный', 'телефон')
+        return [_detect_topic(words) for words in word_sentences]
+
+    def _create_topic_dict(words_by_sentences, cluster_func):
         n_terms = len(set(sum(words_by_sentences, [])))
         model.fit(words_by_sentences, n_terms)
 
@@ -46,16 +55,16 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
         top_words = [sorted(model.cluster_word_distribution[cluster].items(), key=lambda k: k[1], reverse=True)[:7] for
                      cluster in top_index]
 
-        topic_names = _create_cluster(top_words)
+        topic_names = cluster_func(top_words)
         return {v: topic_names[k] for k, v in enumerate(top_index)}
 
-    def _detect_fraud_category(data_fraud):
+    def _detect_category(data_fraud, cluster_func):
         content = data_fraud.content.values.tolist()
         # TODO: preprocess_text before all iterations for every module?
         clean_content = [preprocess_text(text) for text in content]
         words_by_sentences = _remove_stopwords(clean_content)
         words_by_sentences_dict = {k: v for k, v in zip(data_fraud.id.values.tolist(), words_by_sentences)}
-        topic_dict = _create_topic_dict(words_by_sentences)
+        topic_dict = _create_topic_dict(words_by_sentences, cluster_func)
         return data_fraud.apply(lambda message: _detect_topics(message, topic_dict, words_by_sentences_dict), axis=1,
                                 result_type='broadcast')
 
@@ -71,5 +80,8 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
     breakdown_data = data.loc[data.problem_type == 2]
 
     # TODO: implement breakdown detection and merge with other categories
-    fraud_data = _detect_fraud_category(fraud_data)
-    return fraud_data
+    fraud_data = _detect_category(fraud_data, _create_fraud_cluster)
+    breakdown_data = _detect_category(breakdown_data, _create_breakdown_cluster)
+    result = pd.concat([no_problem_data, fraud_data, breakdown_data])
+    result["status"] = result["status"].apply(lambda x: 3)
+    return result
