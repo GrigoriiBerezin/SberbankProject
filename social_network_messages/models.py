@@ -20,7 +20,6 @@ class City(models.Model):
 
 
 # TODO: add subject field
-# TODO: change category choices by Misha decision
 class Message(models.Model):
     PROBLEM_CHOICES = [
         (0, "No problem"),
@@ -28,12 +27,11 @@ class Message(models.Model):
         (2, "Breakdown")
     ]
     CATEGORY_CHOICES = [
+        (0, "Not detected"),
         (1, "Cash Machine Breakdown"),
         (2, "App Breakdown"),
-        (3, "Website Breakdown"),
-        (4, "Banking Card Fraud"),
-        (5, "Telephone Fraud"),
-        (6, "Cash Machine Fraud")
+        (3, "Telephone Fraud"),
+        (4, "Cash Machine Fraud")
     ]
     STATUS_CHOICES = [
         (0, "New Message"),
@@ -51,8 +49,8 @@ class Message(models.Model):
     source = models.CharField(max_length=200, null=True)
     createdAt = models.DateTimeField(default=datetime.datetime.now())
     coordinates = models.ForeignKey(City, on_delete=models.PROTECT, default=City.DEFAULT_CITY_ID, related_name='city')
-    problem_type = models.IntegerField(null=True, choices=PROBLEM_CHOICES)
-    category_type = models.IntegerField(null=True, choices=CATEGORY_CHOICES)
+    problem_type = models.IntegerField(choices=PROBLEM_CHOICES, default=0)
+    category_type = models.IntegerField(choices=CATEGORY_CHOICES, default=0)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
     def __str__(self):

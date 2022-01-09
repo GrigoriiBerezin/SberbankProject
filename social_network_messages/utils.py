@@ -11,11 +11,11 @@ FOREIGN_KEY_MAPPER = {
 }
 
 
-def get_models(status: str, field: str) -> pd.DataFrame:
+def get_models(status: str, fields: list[str]) -> pd.DataFrame:
     status_int = [status_tuple[0] for status_tuple in Message.STATUS_CHOICES if status_tuple[1] == status]
     messages: QuerySet[Message] = Message.objects.filter(status__in=status_int)
-    data_frame: pd.DataFrame = pd.DataFrame(list(messages.values_list('id', 'content', 'status', field)),
-                                            columns=['id', 'content', 'status', field])
+    data_frame: pd.DataFrame = pd.DataFrame(list(messages.values_list('id', 'content', 'status', *fields)),
+                                            columns=['id', 'content', 'status', *fields])
     return data_frame
 
 
