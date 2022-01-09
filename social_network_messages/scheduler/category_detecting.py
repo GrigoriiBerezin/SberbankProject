@@ -8,6 +8,7 @@ from gensim.utils import simple_preprocess
 from nltk.corpus import stopwords
 
 import configurations
+from social_network_messages.models import Message
 from social_network_messages.utils import preprocess_text
 
 
@@ -25,14 +26,14 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
 
     def _detect_topics(message, topic_dict, lemm_text, threshold=configurations.category_detect["threshold"]):
         prob = model.choose_best_label(lemm_text[message.id])
-        topic = topic_dict[prob[0]] if prob[1] >= threshold else 0
+        topic = topic_dict[prob[0]] if prob[1] >= threshold else Message.CATEGORY_CHOICES_DICT["Not Detected"]
         return [message.id, message.content, message.status, message.problem_type, topic]
 
     def _create_fraud_cluster(word_sentences):
         def _detect_topic(words_with_populate):
             words = [word_with_populate[0] for word_with_populate in words_with_populate]
-            # TODO: human-readable statuses
-            return 3 if len(set(words).intersection(names_card)) else 4
+            return Message.CATEGORY_CHOICES_DICT["Telephone Fraud"] if len(set(words).intersection(names_card)) else \
+                Message.CATEGORY_CHOICES_DICT["Cash Machine Fraud"]
 
         names_card = ('онлайн', 'приложение', 'мобильный', 'телефон', 'звонить')
         return [_detect_topic(words) for words in word_sentences]
@@ -40,8 +41,8 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
     def _create_breakdown_cluster(word_sentences):
         def _detect_topic(words_with_populate):
             words = [word_with_populate[0] for word_with_populate in words_with_populate]
-            # TODO: human-readable statuses
-            return 2 if len(set(words).intersection(names_mob)) else 1
+            return Message.CATEGORY_CHOICES_DICT["App Breakdown"] if len(set(words).intersection(names_mob)) else \
+                Message.CATEGORY_CHOICES_DICT["Cash Machine Breakdown"]
 
         names_mob = ('онлайн', 'приложение', 'мобильный', 'телефон')
         return [_detect_topic(words) for words in word_sentences]
@@ -74,14 +75,12 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
     russian_stopwords = stopwords.words("russian")
     russian_stopwords.extend(configurations.category_detect["stop_words"])
 
-    # TODO: make human-readable types
-    no_problem_data = data.loc[data.problem_type == 0]
-    fraud_data = data.loc[data.problem_type == 1]
-    breakdown_data = data.loc[data.problem_type == 2]
+    no_problem_data = data.loc[data.problem_type == Message.PROBLEM_CHOICES_DICT["No Problem"]]
+    fraud_data = data.loc[data.problem_type == Message.PROBLEM_CHOICES_DICT["Fraud"]]
+    breakdown_data = data.loc[data.problem_type == Message.PROBLEM_CHOICES_DICT["Breakdown"]]
 
-    # TODO: implement breakdown detection and merge with other categories
     fraud_data = _detect_category(fraud_data, _create_fraud_cluster)
     breakdown_data = _detect_category(breakdown_data, _create_breakdown_cluster)
     result = pd.concat([no_problem_data, fraud_data, breakdown_data])
-    result["status"] = result["status"].apply(lambda x: 3)
+    result["status"] = result["status"].apply(lambda x: Message.STATUS_CHOICES_DICT["Category Detected"])
     return result

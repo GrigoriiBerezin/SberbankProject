@@ -8,6 +8,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
 
 import configurations as conf
+from social_network_messages.models import Message
 from social_network_messages.utils import preprocess_text
 
 
@@ -35,7 +36,7 @@ def detect_problem(data: pd.DataFrame) -> pd.DataFrame:
         x = pad_sequences(x, maxlen=conf.subject_detect["max_seq_length"])
         problem_type = model.predict(x)
         problem_type = _map_problem_type(problem_type)
-        return [message.id, message.content, 2, problem_type]
+        return [message.id, message.content, Message.STATUS_CHOICES_DICT["Problem Detected"], problem_type]
 
     model: Sequential = get_sequential_model("problem_detection")
     tokenizer = Tokenizer(num_words=conf.subject_detect["max_nb_words"],

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from datrie import Trie
 
-from social_network_messages.models import City
+from social_network_messages.models import City, Message
 from social_network_messages.utils import preprocess_text
 
 
@@ -26,7 +26,7 @@ def detect_geo(data: pd.DataFrame) -> pd.DataFrame:
             if trie.has_keys_with_prefix(city_base.lower()):
                 coordinates = city_with_coord.id
                 break
-        return [message.id, message.content, 5, coordinates]
+        return [message.id, message.content, Message.STATUS_CHOICES_DICT["Coordinates Detected"], coordinates]
 
     cities: np.ndarray = _get_cities_from_db()
     trie: Trie = datrie.Trie(''.join([chr(x) for x in range(ord('а'), ord('я') + 1)]))

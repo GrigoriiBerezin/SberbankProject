@@ -3,6 +3,10 @@ import datetime
 from django.db import models
 
 
+def map_enum_to_dict(enum: list[tuple]) -> dict:
+    return {v: k for k, v in enum}
+
+
 # Create your models here.
 class City(models.Model):
     DEFAULT_CITY_ID = 9999
@@ -22,17 +26,19 @@ class City(models.Model):
 # TODO: add subject field
 class Message(models.Model):
     PROBLEM_CHOICES = [
-        (0, "No problem"),
+        (0, "No Problem"),
         (1, "Fraud"),
         (2, "Breakdown")
     ]
+    PROBLEM_CHOICES_DICT = map_enum_to_dict(PROBLEM_CHOICES)
     CATEGORY_CHOICES = [
-        (0, "Not detected"),
+        (0, "Not Detected"),
         (1, "Cash Machine Breakdown"),
         (2, "App Breakdown"),
         (3, "Telephone Fraud"),
         (4, "Cash Machine Fraud")
     ]
+    CATEGORY_CHOICES_DICT = map_enum_to_dict(CATEGORY_CHOICES)
     STATUS_CHOICES = [
         (0, "New Message"),
         (1, "Subject Detected"),
@@ -42,6 +48,7 @@ class Message(models.Model):
         (5, "Coordinates Detected"),
         (6, "Marked Message")
     ]
+    STATUS_CHOICES_DICT = map_enum_to_dict(STATUS_CHOICES)
 
     url = models.CharField(max_length=400, unique=True)
     name = models.CharField(max_length=400)
