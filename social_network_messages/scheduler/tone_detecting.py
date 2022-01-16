@@ -7,6 +7,7 @@ import pymorphy2
 from social_network_messages.models import Message
 from social_network_messages.utils import get_learned_model
 
+# TODO: add to db?
 stopset_light = {'а', 'будто', 'бы', 'в', 'вам', 'вас', 'вдруг', 'ведь', 'во', 'вот',
                  'впрочем', 'все', 'всех', 'всю', 'вы', 'два', 'для', 'его', 'ее', 'ей', 'ему', 'ж', 'же',
                  'за', 'здесь', 'и', 'из', 'или', 'им', 'иногда', 'их', 'к', 'как', 'какая', 'какой',
@@ -20,14 +21,13 @@ stopset_light = {'а', 'будто', 'бы', 'в', 'вам', 'вас', 'вдру
                  'чего', 'чем', 'что', 'чтоб', 'чтобы', 'эти', 'этого', 'этой', 'этом', 'этот', 'эту', 'я'}
 
 
-# класс предназначен для определения эмоциональности текста
 class DegreeEmotionality(object):
     def __init__(self, string_arr):
         self.EmotionalityTags = pd.DataFrame(columns=['emotionality'])
+        # TODO: optimize with apply
         for i, string in enumerate(string_arr):
             self.EmotionalityTags.at[i, 'emotionality'] = self.__upper_words(string) + self.__exclamation_marks(string)
 
-    # функция подсчета количества слов в строке, которые подряд написаны капсом
     @staticmethod
     def __upper_words(string):
         count_upper_words = 0
@@ -41,7 +41,6 @@ class DegreeEmotionality(object):
                 count_upper_words = 0
         return 0
 
-    # функция поиска утроенных восклицательных и вопросительных знаков
     @staticmethod
     def __exclamation_marks(string):
         answer = 0
@@ -63,22 +62,20 @@ class DegreeEmotionality(object):
                 count_question_marks = 0
         return answer
 
-    # функция получения предсказанных меток эмоциональности
     def get_emotionality_tags(self):
         return self.EmotionalityTags
 
 
-# класс предназначен для определения тональности сообщения
 class SentimentAnalysis(object):
     def __init__(self, column_text, clf, vectorizer):
         self.predictedSentimentTags = pd.DataFrame(columns=['content', 'tone'])
+        # TODO: optimize with apply
         for i, string in enumerate(column_text):
             preprocess_string = self.preprocess(string)
             self.predictedSentimentTags.at[i, 'content'] = string
             x_for_pred = vectorizer.transform([preprocess_string])
             self.predictedSentimentTags.at[i, 'tone'] = clf.predict(x_for_pred)[0]
 
-    # функция удаления стоп-слов и лемматизации текста
     @staticmethod
     def __delete_stop_words(string):
         morph = pymorphy2.MorphAnalyzer()
@@ -90,18 +87,17 @@ class SentimentAnalysis(object):
         string = ' '.join(lemmatized_string)
         return string
 
-    # функция предобработки текста
+    # TODO: preprocess_text before all iterations for every module?
     def preprocess(self, string):
-        string = string.lower()  # приведение к нижнему регистру
-        to_replace = ['р/с ', 'р/счет', 'р/сч ']  # замена сокращений
+        string = string.lower()
+        to_replace = ['р/с ', 'р/счет', 'р/сч ']
         regex = re.compile('|'.join(to_replace))
         string = re.sub(regex, 'расчетный счет ', string)
-        string = re.sub(r'[^а-яё]', ' ', string)  # Удаление оставшихся знаков пунктуации и специальных символов
-        string = re.sub(r'\s+', ' ', string).lstrip().rstrip()  # удаление лишних пробелов
+        string = re.sub(r'[^а-яё]', ' ', string)
+        string = re.sub(r'\s+', ' ', string).lstrip().rstrip()
         string = self.__delete_stop_words(string)
         return string
 
-    # функция получения предсказанных меток тональности
     def get_sentiment_tags(self):
         return self.predictedSentimentTags
 
