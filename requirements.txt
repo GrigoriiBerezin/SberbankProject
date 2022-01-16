@@ -24,3 +24,4 @@ pymorphy2~=0.9.1
 joblib~=1.1.0
 gensim~=4.1.2
 gsdmm==https://github.com/rwalk/gsdmm/archive/refs/heads/master.zip
+scikit-learn~=1.0.2

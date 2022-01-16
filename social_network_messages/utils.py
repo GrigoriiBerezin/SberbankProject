@@ -1,5 +1,7 @@
 import json
+import pickle
 import re
+from pathlib import Path
 
 import pandas as pd
 from django.db.models import QuerySet
@@ -46,3 +48,10 @@ def preprocess_text(text: str) -> str:
     text = re.sub(r'\s+', ' ', text)
     text = re.sub(r' $', '', text)
     return text.lower()
+
+
+def get_learned_model(name: Path):
+    model_path = Path(".") / "saved_models" / name
+    with open(model_path.as_posix(), 'rb') as file:
+        model = pickle.load(file)
+    return model

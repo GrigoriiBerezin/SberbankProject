@@ -49,6 +49,19 @@ class Message(models.Model):
         (6, "Marked Message")
     ]
     STATUS_CHOICES_DICT = map_enum_to_dict(STATUS_CHOICES)
+    TONE_CHOICES = [
+        (0, "Neutral"),
+        (1, "Positive"),
+        (2, "Negative")
+    ]
+    TONE_CHOICES_DIST = map_enum_to_dict(TONE_CHOICES)
+    EMOTIONALITY_CHOICES = [
+        (0, "Not Emotional"),
+        (1, "Low Emotional"),
+        (2, "High Emotional"),
+        (3, "Very High Emotional")
+    ]
+    EMOTIONALITY_CHOICES_DICT = map_enum_to_dict(EMOTIONALITY_CHOICES)
 
     url = models.CharField(max_length=400, unique=True)
     name = models.CharField(max_length=400)
@@ -58,6 +71,8 @@ class Message(models.Model):
     coordinates = models.ForeignKey(City, on_delete=models.PROTECT, default=City.DEFAULT_CITY_ID, related_name='city')
     problem_type = models.IntegerField(choices=PROBLEM_CHOICES, default=0)
     category_type = models.IntegerField(choices=CATEGORY_CHOICES, default=0)
+    tone = models.IntegerField(choices=TONE_CHOICES, default=0)
+    emotionality = models.IntegerField(choices=EMOTIONALITY_CHOICES, default=0)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
     def __str__(self):

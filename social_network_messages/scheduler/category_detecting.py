@@ -1,4 +1,3 @@
-import pickle
 from pathlib import Path
 
 import numpy as np
@@ -9,14 +8,7 @@ from nltk.corpus import stopwords
 
 import configurations
 from social_network_messages.models import Message
-from social_network_messages.utils import preprocess_text
-
-
-def get_learned_model(name: str):
-    model_path = Path(".") / "saved_models" / "category_detection" / name
-    with open(model_path.as_posix(), 'rb') as file:
-        model = pickle.load(file)
-    return model
+from social_network_messages.utils import preprocess_text, get_learned_model
 
 
 def detect_category(data: pd.DataFrame) -> pd.DataFrame:
@@ -70,7 +62,7 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
                                 result_type='broadcast')
 
     morph = pymorphy2.MorphAnalyzer()
-    model = get_learned_model("v3_k15.model")
+    model = get_learned_model(Path("category_detection") / "v3_k15.model")
     # TODO: load stopwords from db?
     russian_stopwords = stopwords.words("russian")
     russian_stopwords.extend(configurations.category_detect["stop_words"])
