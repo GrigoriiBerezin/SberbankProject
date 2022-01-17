@@ -15,6 +15,7 @@ def _get_cities_from_db() -> np.ndarray:
 def detect_geo(data: pd.DataFrame) -> pd.DataFrame:
     def _detect_geo(message):
         content = message.content
+        trie: Trie = datrie.Trie(''.join([chr(x) for x in range(ord('а'), ord('я') + 1)]))
         # TODO: preprocess_text before all iterations for every module?
         content = preprocess_text(content)
         for index, word in enumerate(content.split()):
@@ -29,6 +30,5 @@ def detect_geo(data: pd.DataFrame) -> pd.DataFrame:
         return [message.id, message.content, Message.STATUS_CHOICES_DICT["Coordinates Detected"], coordinates]
 
     cities: np.ndarray = _get_cities_from_db()
-    trie: Trie = datrie.Trie(''.join([chr(x) for x in range(ord('а'), ord('я') + 1)]))
     data = data.apply(_detect_geo, axis=1, result_type='broadcast')
     return data
