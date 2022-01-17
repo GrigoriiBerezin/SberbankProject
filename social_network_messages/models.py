@@ -64,15 +64,15 @@ class Message(models.Model):
     EMOTIONALITY_CHOICES_DICT = map_enum_to_dict(EMOTIONALITY_CHOICES)
 
     url = models.CharField(max_length=400, unique=True)
-    name = models.CharField(max_length=400)
+    name = models.CharField(max_length=400, default="Unnamed")
     content = models.TextField()
     source = models.CharField(max_length=200, null=True)
     createdAt = models.DateTimeField(default=datetime.datetime.now())
-    coordinates = models.ForeignKey(City, on_delete=models.PROTECT, default=City.DEFAULT_CITY_ID, related_name='city')
-    problem_type = models.IntegerField(choices=PROBLEM_CHOICES, default=0)
-    category_type = models.IntegerField(choices=CATEGORY_CHOICES, default=0)
-    tone = models.IntegerField(choices=TONE_CHOICES, default=0)
-    emotionality = models.IntegerField(choices=EMOTIONALITY_CHOICES, default=0)
+    coordinates = models.ForeignKey(City, on_delete=models.PROTECT, related_name='city', null=True)
+    problem_type = models.IntegerField(choices=PROBLEM_CHOICES, null=True)
+    category_type = models.IntegerField(choices=CATEGORY_CHOICES, null=True)
+    tone = models.IntegerField(choices=TONE_CHOICES, null=True)
+    emotionality = models.IntegerField(choices=EMOTIONALITY_CHOICES, null=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
     def __str__(self):

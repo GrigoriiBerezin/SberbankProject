@@ -25,10 +25,13 @@ def detect_problem(data: pd.DataFrame) -> pd.DataFrame:
         content = ' '.join(word for word in content.split() if len(word) > conf.subject_detect["max_word_length"])
         return content
 
-    def _map_problem_type(array: np.ndarray) -> np.ndarray:
-        enumerate_array = (array > 0.5).astype(int)[0]
-        problem_type_dict = dict(enumerate(enumerate_array))
-        return list(problem_type_dict.keys())[list(problem_type_dict.values()).index(1)]
+    def _map_problem_type(array: np.ndarray) -> int:
+        enumerate_array: np.ndarray = (array > 0.5).astype(int)[0]
+        if enumerate_array.sum() == 0:
+            return 0
+        else:
+            problem_type_dict = dict(enumerate(enumerate_array))
+            return list(problem_type_dict.keys())[list(problem_type_dict.values()).index(1)]
 
     def _detect_problem(message):
         content = message.content
