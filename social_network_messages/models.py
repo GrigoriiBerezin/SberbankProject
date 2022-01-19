@@ -67,7 +67,7 @@ class Message(models.Model):
     name = models.CharField(max_length=400, default="Unnamed")
     content = models.TextField()
     source = models.CharField(max_length=200, null=True)
-    createdAt = models.DateTimeField(default=datetime.datetime.now())
+    created_at = models.DateTimeField(default=datetime.datetime.now())
     coordinates = models.ForeignKey(City, on_delete=models.PROTECT, related_name='city', null=True)
     problem_type = models.IntegerField(choices=PROBLEM_CHOICES, null=True)
     category_type = models.IntegerField(choices=CATEGORY_CHOICES, null=True)
@@ -76,7 +76,7 @@ class Message(models.Model):
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
     def __str__(self):
-        return f"""{self.name} ({self.content[:20]}...) {self.createdAt.strftime("%d.%m.%Y %H:%M")}"""
+        return f"""{self.name} ({self.content[:20]}...) {self.created_at.strftime("%d.%m.%Y %H:%M")}"""
 
     class Meta:
-        ordering = ['createdAt']
+        ordering = ['created_at']

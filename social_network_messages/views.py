@@ -5,13 +5,13 @@ from .serializers import MessageSerializer, CitySerializer
 
 
 # Create your views here.
-class CityViewSet(viewsets.ModelViewSet):
+class CityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = City.objects.all().order_by('name')
     serializer_class = CitySerializer
 
 
-class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all().order_by('createdAt')
+class MessageViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Message.objects.all().order_by('created_at')
     serializer_class = MessageSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'content']
