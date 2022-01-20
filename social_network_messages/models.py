@@ -74,6 +74,7 @@ class Message(models.Model):
     tone = models.IntegerField(choices=TONE_CHOICES, null=True)
     emotionality = models.IntegerField(choices=EMOTIONALITY_CHOICES, null=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
+    resolved = models.BooleanField(default=False)
 
     def __str__(self):
         return f"""{self.name} ({self.content[:20]}...) {self.created_at.strftime("%d.%m.%Y %H:%M")}"""
