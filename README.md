@@ -17,6 +17,7 @@ All commands are executed in root package
 - `admin/` - admin routes
 - `api/v1` - main api route
 - `api/v1/messages` - api route for `Message` class
+- `api/v1/cities` - api route for `City` class
 
 #### Some tips:
 - You can create admin user by `python manage.py createsuperuser` to use admin route
