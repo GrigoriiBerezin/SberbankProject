@@ -25,3 +25,5 @@ joblib~=1.1.0
 gensim~=4.1.2
 gsdmm==https://github.com/rwalk/gsdmm/archive/refs/heads/master.zip
 scikit-learn~=1.0.2
+pymystem3~=0.2.0
+lightgbm~=3.3.2

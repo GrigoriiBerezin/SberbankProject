@@ -68,6 +68,7 @@ class Message(models.Model):
     content = models.TextField()
     source = models.CharField(max_length=200, null=True)
     created_at = models.DateTimeField(default=datetime.datetime.now())
+    probability = models.FloatField(null=True)
     coordinates = models.ForeignKey(City, on_delete=models.PROTECT, related_name='city', null=True)
     problem_type = models.IntegerField(choices=PROBLEM_CHOICES, null=True)
     category_type = models.IntegerField(choices=CATEGORY_CHOICES, null=True)
