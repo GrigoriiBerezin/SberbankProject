@@ -29,4 +29,6 @@ admin = {
     "error_show_limit": 3
 }
 
-secret_key = "enter your secret key"
+secret_key = "django-insecure-3scg!r)4n10ac%icyxulbt0mtwlnrm0gads&frq=xj^b0u#+8w"
+
+query_search = "сбербанк"

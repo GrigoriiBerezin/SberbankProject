@@ -59,7 +59,7 @@ def _format_posts(raw_posts):
 
 
 def load_newsfeed():
-    query = "сбербанк"
+    query = configurations.query_search
     limit_per_list = 200
     current_time = calendar.timegm((datetime.datetime.utcnow().date() - datetime.timedelta(days=1)).timetuple())
 
