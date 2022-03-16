@@ -71,6 +71,7 @@ def detect_category(data: pd.DataFrame) -> pd.DataFrame:
     fraud_data = data.loc[data.problem_type == Message.PROBLEM_CHOICES_DICT["Fraud"]]
     breakdown_data = data.loc[data.problem_type == Message.PROBLEM_CHOICES_DICT["Breakdown"]]
 
+    no_problem_data = no_problem_data.assign(category_type=Message.CATEGORY_CHOICES_DICT["Not Detected"])
     fraud_data = _detect_category(fraud_data, _create_fraud_cluster)
     breakdown_data = _detect_category(breakdown_data, _create_breakdown_cluster)
     result = pd.concat([no_problem_data, fraud_data, breakdown_data])
