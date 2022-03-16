@@ -20,17 +20,17 @@ class MessageListToBeResolvedFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'to resolve':
-            return queryset.filter(status__exact=Message.STATUS_CHOICES_DICT["Marked Message"], resolved=False)
+            return queryset.filter(status__exact=Message.STATUS_CHOICES_DICT["Coordinates Detected"], resolved=False)
         if self.value() == 'resolved':
             return queryset.filter(resolved=True)
         if self.value() == 'not marked':
-            return queryset.exclude(status__exact=Message.STATUS_CHOICES_DICT["Marked Message"])
+            return queryset.exclude(status__exact=Message.STATUS_CHOICES_DICT["Coordinates Detected"])
 
 
 @admin.action(description='Mark messages as resolved')
 def make_resolved(model_admin, request, queryset: models.QuerySet):
     limit = configurations.admin["error_show_limit"]
-    not_final_messages = queryset.exclude(status__exact=Message.STATUS_CHOICES_DICT["Marked Message"])
+    not_final_messages = queryset.exclude(status__exact=Message.STATUS_CHOICES_DICT["Coordinates Detected"])
     if len(not_final_messages) != 0:
         not_final_ids = [str(field_id[0]) for field_id in not_final_messages.values_list('id')]
         ids_to_show = ', '.join(not_final_ids[:limit]) + '...' if len(not_final_ids) > limit else ', '.join(
