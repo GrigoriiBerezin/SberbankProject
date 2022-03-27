@@ -17,6 +17,8 @@ WORKFLOW_STATS = {
     "geo position detecting": ("Tone Detected", ["coordinates"], detect_geo),
 }
 
+logger = logging.getLogger(__name__)
+
 
 def workflow():
     for (process_name, (status, additional_fields, process)) in WORKFLOW_STATS.items():
@@ -26,4 +28,4 @@ def workflow():
                 new_data: pd.DataFrame = process(data)[["id", "status", *additional_fields]]
                 update_model(new_data)
         except Exception as err:
-            logging.error(f"Error on stage: {process_name}. Error: {err}")
+            logger.error(f"Error on stage: {process_name}. Error: {err}")
